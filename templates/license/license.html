@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Лицензии {% endblock %}
+{% block content %}
+
+<form style="padding:20px" method="POST" id="createinspection">
+    {% csrf_token %}
+    <div class="form-group col-md-12 mb-0">
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_license.license_id|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{ form_license.department|as_crispy_field }}
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_license.subject|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_license.date_start|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{ form_license.date_end|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_license.status|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_license.comments|as_crispy_field }}
+            </div>
+
+        </div>
+    <div class="form-row">
+    {{ formset.management_form }}
+        {{ formset_wells.management_form }}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Номер скважины</th>
+            <th>Водоотбор</th>
+        </tr>
+        </thead>
+        <tbody id="formset_wrapper_1">
+        <tr class="cb">
+
+            <td>
+                {% for form in formset.forms %}
+                {{ form.well }}
+                {% endfor %}
+            </td>
+            <td>
+                {% for form in formset_wells.forms %}
+                {{ form.aquifer }}
+                {% endfor %}
+            </td>
+            <td>
+                {% for form in formset_wells.forms %}
+                {{ form.subsurface_site }}
+                {% endfor %}
+            </td>
+            <td>
+                {% for form in formset.forms %}
+                {{ form.flow_rate }}
+                {% endfor %}
+            </td>
+            <td>
+                <button type="button" class="align-self-center btn btn-danger delete-image-form">
+                    Удалить запись
+                </button>
+            </td>
+        </tr>
+        </tbody>
+        <tbody id="emptyform_wrapper_1" hidden="True">
+        <tr class="cb">
+            <td>{{ formset.empty_form.well }}</td>
+            <td>{{ formset_wells.empty_form.aquifer }}</td>
+            <td>{{ formset_wells.empty_form.subsurface_site }}</td>
+            <td>{{ formset.empty_form.flow_rate }}</td>
+            <td>
+                <button type="button" class="align-self-center btn btn-danger delete-image-form">
+                    Удалить запись
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+        <div class="form-row">
+    <button type="button" id="add-image-form" class="btn btn-primary my-3"> Добавить запись</button>
+        </div>
+        <hr>
+            <div class="form-row">
+    <button type="submit" class="btn btn-primary" id="save" style="background-color: #3cb371; border-color: #000000;">Сохранить
+    </button>
+            </div>
+    </div>
+    </div>
+</form>
+
+<script>
+const addImageFormBtn = document.querySelector("#add-image-form");
+     let formCount =$('#id_cat-TOTAL_FORMS').val()-1;
+     const mainForm = document.querySelector("#createinspection");
+        var url_ajax = '{% url "lic_prepopulated" %}';
+        var id_ajax_1 = "id_license_id";
+
+        $("#"+ id_ajax_1).blur(function (){
+      var form = $(this).closest("form");
+      $.ajax({
+        url: url_ajax,
+        data: form.serialize(),
+        dataType: 'json',
+        success: function (data) {
+        if (data['queryset']>1 && formCount-data['queryset']-1<=0)
+            {
+                for (step = 0; step < data['queryset']-formCount; step++)
+                {
+                    formCount++;
+                    $('#formset_wrapper_1').append($('#emptyform_wrapper_1').html().replace(/__prefix__/g, formCount));
+                    $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wel-TOTAL_FORMS').val(parseInt(formCount)+1);
+
+                }
+            }
+            if (data) {
+                    for (let key in data) {
+                        let element = document.getElementById('id_' + key);
+                        switch (element.type) {
+                            case 'checkbox':
+                                element.checked = data[key];
+                                break;
+                            default:
+                                element.value = data[key];
+                                break;
+                             }
+                      }
+            }
+        }
+      });
+    });
+
+    addImageFormBtn.addEventListener("click", function (event) {
+            formCount++;
+            $('#formset_wrapper_1').append($('#emptyform_wrapper_1').html().replace(/__prefix__/g, formCount));
+            $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+
+        });
+
+function updateForms(cl)
+{
+var count = 0;
+         $(cl).each(function()
+        {
+            $(this).find('input, select, textarea').each(function()
+            {
+                            const formRegex = RegExp(`(\\d){1}-`, 'g');
+                            $(this).attr('id',$(this).attr('id').replace(formRegex, `${count}-`))
+                             $(this).attr('name',$(this).attr('name').replace(formRegex, `${count}-`))
+            });
+                    count++;
+            });
+}
+
+ mainForm.addEventListener("click", function (event) {
+            if (event.target.classList.contains("delete-image-form")) {
+                event.preventDefault();
+                event.target.closest('tr').remove();
+                formCount--;
+                 updateForms('.cb');
+
+                 $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+
+            }
+        });
+
+
+
+</script>
+{% endblock %}

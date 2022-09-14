@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Обследование ВЗУ {% endblock %}
+{% block content %}
+<form style="padding:20px" method="POST" id="createinspection">
+    {% csrf_token %}
+    <div class="row">
+    <div class="form-group col-md-1 mb-0">
+        <a type="button" class="btn btn-outline-secondary" href="/intakes_survey/"><</a>
+    </div>
+     <div class="form-group col-md-11 mb-0">
+         {% if form_intakes_survey.errors %}
+         <div class="alert alert-danger">
+             {{ form_intakes_survey.errors }}
+         </div>
+         {% endif %}
+         {% if formset_wells_intakes_survey.errors %}
+         <div class="alert alert-danger">
+             {{ formset_wells_intakes_survey.errors }}
+         </div>
+         {% endif %}
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                {{ form_intakes_survey.subsurface_site|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_intakes_survey.date|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_intakes_survey.intake_regime|as_crispy_field }}
+            </div>
+        </div>
+         <h4>Ведение мониторинга</h4>
+         <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.flow_records_status|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.flow_reports_status|as_crispy_field }}
+            </div>
+        </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.waterdepth_records_status|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.waterdepth_reports_status|as_crispy_field }}
+            </div>
+        </div>
+
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.chem_records_status|as_crispy_field }}
+            </div>
+              <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.chem_reports_status|as_crispy_field }}
+            </div>
+        </div>
+         <h4>Предоставление отчётности</h4>
+         <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.duty_reports_status|as_crispy_field }}
+            </div>
+        </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.duty_condition|as_crispy_field }}
+            </div>
+         </div>
+         <div class="form-row">
+             <div class="form-group col-md-12 mb-0">
+                {{ form_intakes_survey.duty_comments|as_crispy_field }}
+            </div>
+         </div>
+         <hr>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.tp2_ls4_reports_status|as_crispy_field }}
+                 {{ form_intakes_survey.reports_comments|as_crispy_field }}
+            </div>
+              <div class="form-group col-md-6 mb-0">
+                 {{ form_intakes_survey.wells_documentation_status|as_crispy_field }}
+                  {{ form_intakes_survey.wells_documentation_comments|as_crispy_field }}
+            </div>
+         </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.project_documentation_status|as_crispy_field }}
+                 {{ form_intakes_survey.project_documentation_comments|as_crispy_field }}
+            </div>
+              <div class="form-group col-md-6 mb-0">
+                 {{ form_intakes_survey.geophysics_logs_status|as_crispy_field }}
+                  {{ form_intakes_survey.geophysics_logs_comments|as_crispy_field }}
+            </div>
+         </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.wells_protect_status|as_crispy_field }}
+                 {{ form_intakes_survey.wells_protect_description|as_crispy_field }}
+            </div>
+              <div class="form-group col-md-6 mb-0">
+                 {{ form_intakes_survey.water_treatment_status|as_crispy_field }}
+                  {{ form_intakes_survey.water_treatment_description|as_crispy_field }}
+            </div>
+         </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.sanitation_zone_status|as_crispy_field }}
+                 {{ form_intakes_survey.sanitation_zone_description|as_crispy_field }}
+            </div>
+              <div class="form-group col-md-6 mb-0">
+                 {{ form_intakes_survey.contamination_status|as_crispy_field }}
+                  {{ form_intakes_survey.contamination_description|as_crispy_field }}
+            </div>
+         </div>
+         <hr>
+         {{ formset_wells_cat.management_form }}
+    {{ formset_wells_cond.management_form }}
+    {{ formset_wells_eq.management_form }}
+    {{ formset_wells_rate.management_form }}
+    {{ formset_wells_intakes_survey.management_form }}
+    {{ formset_wells_sample.management_form }}
+    {{ formset_wells_waterdepth.management_form }}
+    {{ formset_wells_lugheight.management_form }}
+    {{ formset_wells_condition.management_form }}
+
+        <ul class="collapsible">
+            <div class="form-row">
+            <li>
+                <div class="collapsible-header">Каталог скважин</div>
+                <div class="collapsible-body">
+                    <table class="table table-striped table" id="table_1">
+                        <thead>
+                        <tr>
+                            <th>Номер скважины</th>
+                            <th>Водоотбор, м3/сут</th>
+                            <th>Расстояние до ЗСО1, м</th>
+                            <th>Глубина до воды, м</th>
+                            <th>Высота патрубка, м</th>
+                            <th>Номер пробы воды</th>
+                        </tr>
+                        </thead>
+                        <tbody id="formset_wrapper_1">
+                        <tr class="cb">
+                            <td>
+                                {% for form in formset_wells_cat.forms %}
+                                {{ form.well_id }}
+                                {% endfor %}
+                            </td>
+                            <td>{% for form in formset_wells_rate.forms %}
+                                {{ form.flow_rate }}
+                                {% endfor %}
+                            </td>
+                            <td>{% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.sanitation_distance }}
+                                {% endfor %}
+                            </td>
+                            <td>{% for form in formset_wells_waterdepth.forms %}
+                                {{ form.water_depth }}
+                                {% endfor %}
+                            </td>
+                            <td>{% for form in formset_wells_lugheight.forms %}
+                                {{ form.lug_height }}
+                                {% endfor %}
+                            </td>
+                            <td>{% for form in formset_wells_sample.forms %}
+                                {{ form.sample_name }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <button type="button" class="align-self-center btn btn-danger delete-image-form">
+                                    Удалить запись
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tbody id="emptyform_wrapper_1" hidden="True">
+                        <tr class="cb">
+                            <td>{{ formset_wells_cat.empty_form.well_id }}</td>
+                            <td>{{ formset_wells_rate.empty_form.flow_rate }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.sanitation_distance }}</td>
+                            <td>{{ formset_wells_waterdepth.empty_form.water_depth }}</td>
+                            <td>{{ formset_wells_lugheight.empty_form.lug_height }}</td>
+                            <td>{{ formset_wells_sample.empty_form.sample_name }}</td>
+                            <td>
+                                <button type="button" class="align-self-center btn btn-danger delete-image-form">
+                                    Удалить запись
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" id="add-image-form" class="btn btn-primary my-3"> Добавить запись</button>
+                </div>
+            </li>
+            </div>
+            <div class="form-row">
+            <li>
+                <div class="collapsible-header"><i class="mdi-navigation-chevron-right"></i>Техническое состояние
+                    скважин
+                </div>
+                <div class="collapsible-body">
+                    <table class="table table-striped table" id="table_2">
+                        <thead>
+                        <tr>
+                            <th>Номер скважины</th>
+                            <th>Общее техническое состояние</th>
+                            <th>Исправность патрубка</th>
+                            <th>Исправность оголовка</th>
+                            <th>Цементация устья</th>
+                            <th>Возможность замера уровня</th>
+                            <th>Наличие средств учёта водотбора</th>
+                            <th>Наличие средств замера уровня</th>
+                            <th>Наличие крана для отбора проб</th>
+                        </tr>
+                        </thead>
+                        <tbody id="formset_wrapper_2">
+                        <tr class="cb2">
+                            <td>
+                                <div class="image-form">
+                                    {% for form in formset_wells_cond.forms %}
+                                    {{ form.well_id }}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                {% for form in formset_wells_condition.forms %}
+                                {{ form.condition }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.well_lug_condition }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.well_head_condition }}
+                                {% endfor %}
+                            </td>
+                             <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.well_collar_condition }}
+                                {% endfor %}
+                            </td>
+                             <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.waterdepth_measure }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.flow_recorder_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.waterdepth_recorder_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.sampling_crane_status }}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tbody id="emptyform_wrapper_2" hidden="True">
+                        <tr class="cb2">
+                            <td>{{ formset_wells_cond.empty_form.well_id }}</td>
+                            <td>{{ formset_wells_condition.empty_form.condition }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.well_lug_condition }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.well_head_condition }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.well_collar_condition }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.waterdepth_measure }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.flow_recorder_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.waterdepth_recorder_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.sampling_crane_status }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </li>
+            </div>
+            <div class="form-row">
+            <li>
+                <div class="collapsible-header"><i class="mdi-navigation-chevron-right"></i>Дооборудование скважин до
+                    норм ИТМ ГО
+                </div>
+                <div class="collapsible-body">
+                    <table class="table table-striped table" id="table_3">
+                        <thead>
+                        <tr>
+                            <th>Номер скважины</th>
+                            <th>Наличие передвижной электростанции</th>
+                            <th>Возможность подключения</th>
+                            <th>Наличие пожарного оборудования</th>
+                            <th>Наличие подъездных путей</th>
+                            <th>Примечание</th>
+                        </tr>
+                        </thead>
+                        <tbody id="formset_wrapper_3">
+                        <tr class="cb3">
+                            <td>
+                                {% for form in formset_wells_eq.forms %}
+                                {{ form.well_id }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.power_station_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.connectivity_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.fire_equipment_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.driveways_status }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for form in formset_wells_intakes_survey.forms %}
+                                {{ form.comments }}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tbody id="emptyform_wrapper_3" hidden="True">
+                        <tr class="cb3">
+                            <td>{{ formset_wells_eq.empty_form.well_id }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.power_station_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.connectivity_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.fire_equipment_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.driveways_status }}</td>
+                            <td>{{ formset_wells_intakes_survey.empty_form.comments }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            </div>
+        </ul>
+         <hr>
+         <div class="form-row">
+             <div class="form-group col-md-12 mb-0">
+                {{ form_intakes_survey.comments|as_crispy_field }}
+            </div>
+         </div>
+           <div class="form-row">
+             <div class="form-group col-md-12 mb-0">
+                {{ form_intakes_survey.recommendations|as_crispy_field }}
+            </div>
+         </div>
+         <div class="form-row">
+             <div class="form-group col-md-6 mb-0">
+                {{ form_intakes_survey.survey1|as_crispy_field }}
+                 {{ form_intakes_survey.survey2|as_crispy_field }}
+            </div>
+         </div>
+
+    </div>
+    <button type="submit" class="btn btn-primary" id="save"
+            style="background-color: #3cb371; border-color: #000000;">Сохранить
+    </button>
+     </div>
+    </div>
+</form>
+<script type="text/javascript" src="{% static 'js/intakes_survey.js' %}"></script>
+<script>
+
+     const addImageFormBtn = document.querySelector("#add-image-form");
+     let formCount =$('#id_cat-TOTAL_FORMS').val()-1;
+     const mainForm = document.querySelector("#createinspection");
+
+      var url_ajax = '{% url "is_prepopulated" %}';
+      var id_ajax_1 = "id_subsurface_site";
+      $("#"+ id_ajax_1).blur(function (){
+      var form = $(this).closest("form");
+      $.ajax(
+      {
+        url: url_ajax,
+        data: form.serialize(),
+        dataType: 'json',
+        success: function (data)
+        {
+            if (data['queryset']>0 && formCount-data['queryset']<=0)
+            {
+                for (step = 0; formCount+2<=data['queryset']; step++)
+                {
+                    formCount++;
+                    $('#formset_wrapper_1').append($('#emptyform_wrapper_1').html().replace(/__prefix__/g, formCount));
+                    $('#formset_wrapper_2').append($('#emptyform_wrapper_2').html().replace(/__prefix__/g,formCount));
+                    $('#formset_wrapper_3').append($('#emptyform_wrapper_3').html().replace(/__prefix__/g, formCount));
+                    $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_cond-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_eq-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_wr-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_wwd-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_wl-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_ws-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_wis-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_wc-TOTAL_FORMS').val(parseInt(formCount)+1);
+
+                }
+            }
+            if (data)
+            {
+                    for (let key in data)
+                    {
+                        let element = document.getElementById('id_' + key);
+                        switch (element.type)
+                        {
+                            case 'checkbox':
+                                element.checked = data[key];
+                                break;
+                            default:
+                                element.value = data[key];
+                                break;
+                        }
+                    }
+            }
+        }
+      });
+    });
+
+addImageFormBtn.addEventListener("click", function (event) {
+            formCount++;
+            $('#formset_wrapper_1').append($('#emptyform_wrapper_1').html().replace(/__prefix__/g, formCount));
+            $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+             $('#formset_wrapper_2').append($('#emptyform_wrapper_2').html().replace(/__prefix__/g, formCount));
+            $('#id_cond-TOTAL_FORMS').val(parseInt(formCount)+1);
+            $('#formset_wrapper_3').append($('#emptyform_wrapper_3').html().replace(/__prefix__/g, formCount));
+            $('#id_eq-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wr-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wwd-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wl-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_ws-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wis-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wc-TOTAL_FORMS').val(parseInt(formCount)+1);
+
+        });
+
+function updateForms(cl)
+{
+var count = 0;
+         $(cl).each(function()
+        {
+            $(this).find('input, select, textarea').each(function()
+            {
+                            const formRegex = RegExp(`(\\d){1}-`, 'g');
+                            $(this).attr('id',$(this).attr('id').replace(formRegex, `${count}-`))
+                             $(this).attr('name',$(this).attr('name').replace(formRegex, `${count}-`))
+            });
+                    count++;
+            });
+}
+
+ mainForm.addEventListener("click", function (event) {
+            if (event.target.classList.contains("delete-image-form")) {
+                event.preventDefault();
+                index=event.target.closest('tr').rowIndex;
+                event.target.closest('tr').remove();
+                 document.getElementById("table_2").deleteRow(index);
+                 document.getElementById("table_3").deleteRow(index);
+                formCount--;
+                 updateForms('.cb');
+                 updateForms('.cb2');
+                 updateForms('.cb3');
+                 $('#id_cat-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_cond-TOTAL_FORMS').val(parseInt(formCount)+1);
+                    $('#id_eq-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wr-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wwd-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wl-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_ws-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wis-TOTAL_FORMS').val(parseInt(formCount)+1);
+                     $('#id_wc-TOTAL_FORMS').val(parseInt(formCount)+1);
+            }
+        });
+</script>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Акт обследования участка рекогносцировки {% endblock %}
+{% block content %}
+<form style="padding:20px" method="POST" name="form2">
+    <!-- Security token -->
+    {% csrf_token %}
+    <div class="row">
+        <div class="form-group col-md-1 mb-0">
+            <a type="button" class="btn btn-outline-secondary" href="/recon_sites_survey/"><</a>
+        </div>
+    <div class="form-group col-md-11 mb-0">
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                {{ form_recon_sites.recon_site_id|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_documents.creation_date|as_crispy_field }}
+            </div>
+
+        </div>
+        <hr>
+          <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header"><i class="mdi-navigation-chevron-right"></i>Добавленные точки</div>
+                <div class="collapsible-body">
+        {{ form_recon_points_survey.management_form }}
+        <table>
+            <thead>
+            <tr>
+                <th>Номер точки</th>
+                <th>Дата</th>
+            </tr>
+            </thead>
+            <tbody id="formset_wrapper_1">
+            {% for form in form_recon_points_survey.forms %}
+            <tr class="cb">
+                <td>
+                    {{ form.recon_point }}
+                </td>
+                <td>
+                    {{ form.date }}
+                </td>
+                <td>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                        Редактировать
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+                </div>
+            </li>
+          </ul>
+        <hr>
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_recon_sites_survey.dates|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{ form_recon_sites_survey.route_length|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_recon_sites_survey.survey_information|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_recon_sites_survey.work_information|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_recon_sites_survey.weather|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_recon_sites_survey.anthropogenic_impact|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{ form_recon_sites_survey.conclusion|as_crispy_field }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{ form_recon_sites_survey.survey1|as_crispy_field }}
+                {{ form_recon_sites_survey.survey2|as_crispy_field }}
+            </div>
+        </div>
+        {{ form_field.as_table }}
+        <button type="submit" onclick="javascript:form2.action=getURL();" class="btn btn-primary" id="save"
+                style="background-color: #3cb371; border-color: #000000;">Сохранить
+        </button>
+    </div>
+    </div>
+</form>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Редактирование точек рекогносцировки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe name="hiddenFrame" hidden="True"></iframe>
+                <form id="form_child" method="POST" name="form" target="hiddenFrame">
+                    {% csrf_token %}
+                    {{ form_survey|crispy }}
+                    <input type="submit" value="Сохранить" onclick="javascript:form.action='/recon_points_survey/'+document.getElementById('id_recon_point').value+'/'+document.getElementById('id_date').value+'/';"
+                           class="btn btn-primary"/>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var exampleModal = document.getElementById('exampleModal')
+exampleModal.addEventListener('show.bs.modal', function (event) {
+  var button = event.relatedTarget;
+  var $col1 = $(button).closest("tr").find("td:nth-child(1)");
+  var $col2 = $(button).closest("tr").find("td:nth-child(2)");
+  var point_id=$col1.children().attr('id');
+  var date_recon=$col2.children().attr('id');
+   var recipient=document.getElementById(point_id).value;
+   var date=document.getElementById(date_recon).value;
+  var modalBodyInput = exampleModal.querySelector('#id_recon_point')
+  var dateInput = exampleModal.querySelector('#id_date')
+  modalBodyInput.value = recipient;
+  dateInput.value=date;
+
+  var url_ajax1 = "/recon_points_survey/rps_prepopulated/";
+        $(document).ready(function(){
+        var form = $('#form_child');
+      $.ajax({
+        url: url_ajax1,
+        data: form.serialize(),
+        dataType: 'json',
+        success: function (data) {
+            if (data) {
+                    for (let key in data) {
+                        let element = document.getElementById('id_' + key);
+                        switch (element.type) {
+                            case 'checkbox':
+                                element.checked = data[key];
+                                break;
+                            default:
+                                element.value = data[key];
+                                break;
+                             }
+                      }
+            }
+        }
+      });
+      });
+})
+
+
+
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="container p-5 col-md-6">
+    <h2 class="font-weight-bold mt-2">Выход из системы</h2>
+    <hr>
+    <p>Вы успешно вышли из приложения. Вы можете <a href="{% url "login" %}">войти повторно</a>.</p>
+
+</div>
+
+{% endblock %}
